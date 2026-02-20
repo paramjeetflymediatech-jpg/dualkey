@@ -21,9 +21,69 @@ const Project = sequelize.define(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    // 🔥 New structured location
     location: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: {
+        address: "",
+        city: "",
+        state: "",
+        country: "",
+        postcode: "",
+        coordinates: {
+          lat: null,
+          lng: null,
+        },
+      },
+    },
+
+    developer: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    type: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    status: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    totalUnits: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    availableUnits: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    priceRange: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: {
+        min: null,
+        max: null,
+        currency: "AUD",
+      },
+    },
+    features: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: [],
+    },
+    amenitiesNearby: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: [],
+    },
+    completionDate: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+    },
+    associateOnly: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
     price: {
       type: DataTypes.DECIMAL(10, 2),

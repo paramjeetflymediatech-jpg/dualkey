@@ -5,6 +5,9 @@ import {
   createProject,
   getProjectBySlug,
   getAllProjects,
+  getProjectById,
+  updateProject,
+  deleteProject,
 } from "../controllers/projectController.js";
 
 import { upload } from "../middleware/uploadMiddleware.js";
@@ -21,6 +24,17 @@ router.post(
   createProject,
 );
 
-router.get("/:id", protect, getProjectBySlug);
+router.get("/slug/:slug", getProjectBySlug);
+router.get("/:id", protect, getProjectById);
+
+router.put(
+  "/:id",
+  protect,
+  requireRole(["admin"]),
+  upload.array("image", 5),
+  updateProject,
+);
+
+router.delete("/:id", protect, requireRole(["admin"]), deleteProject);
 
 export default router;

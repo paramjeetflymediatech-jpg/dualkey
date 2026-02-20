@@ -23,6 +23,25 @@ export const getProjectById = async (id) => {
   return response.data;
 };
 
+export const getProjectBySlug = async (slug) => {
+  const response = await api.get(`/projects/slug/${slug}`);
+  return response.data;
+};
+
+export const updateProject = async (id, projectData) => {
+  const response = await api.put(`/projects/${id}`, projectData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const deleteProject = async (id) => {
+  const response = await api.delete(`/projects/${id}`);
+  return response.data;
+};
+
 export const createProject = async (projectData) => {
   const response = await api.post("/projects", projectData, {
     headers: {

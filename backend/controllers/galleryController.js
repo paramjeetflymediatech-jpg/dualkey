@@ -32,13 +32,14 @@ export const createGalleryItem = async (req, res) => {
     return res.status(400).json({ message: "No image uploaded" });
   }
 
-  const { type, caption } = req.body;
+  const { type, caption, category } = req.body;
 
   try {
     const galleryItem = await Gallery.create({
       image: `/uploads/${req.file.filename}`,
       type: type || "image",
       caption,
+      category: category || "All",
     });
 
     res.status(201).json(galleryItem);

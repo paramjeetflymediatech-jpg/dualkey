@@ -21,6 +21,11 @@ const Gallery = sequelize.define(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    category: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: "All",
+    },
   },
   {
     timestamps: true,

@@ -15,10 +15,19 @@ export default function AdminGallery() {
     image: null,
     type: "image",
     caption: "",
+    category: "Main Dwelling", // Default category
   });
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const categories = [
+    "Main Dwelling",
+    "Rear Unit",
+    "Exterior",
+    "Interior",
+    "Floor Plans",
+  ];
 
   useEffect(() => {
     fetchGallery(currentPage);
@@ -57,14 +66,20 @@ export default function AdminGallery() {
     data.append("image", formData.image);
     data.append("type", formData.type);
     data.append("caption", formData.caption);
+    data.append("category", formData.category);
 
     try {
       await createGalleryItem(data);
       alert("Item added successfully");
-      setFormData({ image: null, type: "image", caption: "" });
+      setFormData({
+        image: null,
+        type: "image",
+        caption: "",
+        category: "Main Dwelling",
+      });
       // Reset file input manually if needed
       document.getElementById("fileInput").value = "";
-      fetchGallery();
+      fetchGallery(currentPage);
     } catch (error) {
       console.error(error);
       alert("Failed to add item");
@@ -91,6 +106,7 @@ export default function AdminGallery() {
         <h2 className="text-xl font-bold mb-4">Add New Item</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Image Input */}
             <div>
               <label className="block text-gray-700 font-bold mb-2">
                 Image / 360 File
@@ -105,6 +121,8 @@ export default function AdminGallery() {
                 required
               />
             </div>
+
+            {/* Type Selection */}
             <div>
               <label className="block text-gray-700 font-bold mb-2">Type</label>
               <select
@@ -117,19 +135,41 @@ export default function AdminGallery() {
                 <option value="360">360 Degree View</option>
               </select>
             </div>
+
+            {/* Category Selection */}
+            <div>
+              <label className="block text-gray-700 font-bold mb-2">
+                Category
+              </label>
+              <select
+                name="category"
+                className="w-full px-3 py-2 border rounded"
+                value={formData.category}
+                onChange={handleChange}
+              >
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Caption Input */}
+            <div>
+              <label className="block text-gray-700 font-bold mb-2">
+                Caption (Optional)
+              </label>
+              <input
+                type="text"
+                name="caption"
+                className="w-full px-3 py-2 border rounded"
+                value={formData.caption}
+                onChange={handleChange}
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-gray-700 font-bold mb-2">
-              Caption (Optional)
-            </label>
-            <input
-              type="text"
-              name="caption"
-              className="w-full px-3 py-2 border rounded"
-              value={formData.caption}
-              onChange={handleChange}
-            />
-          </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -145,7 +185,7 @@ export default function AdminGallery() {
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {items.map((item) => (
             <div key={item._id} className="relative group border rounded p-2">
-              <div className="aspect-w-16 aspect-h-9 bg-gray-200 overflow-hidden mb-2">
+              <div className="aspect-w-16 aspect-h-9 bg-gray-200 overflow-hidden mb-2 relative">
                 <img
                   src={`${image_url}${item.image}`}
                   alt={item.caption}
@@ -156,13 +196,17 @@ export default function AdminGallery() {
                     360°
                   </div>
                 )}
+                {/* Category Badge */}
+                <div className="absolute bottom-2 left-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                  {item.category || "Uncategorized"}
+                </div>
               </div>
-              <p className="text-sm text-gray-600 truncate mb-2">
+              <p className="text-sm text-gray-600 truncate mb-2 font-medium">
                 {item.caption || "No Caption"}
               </p>
               <button
                 onClick={() => handleDelete(item._id)}
-                className="w-full bg-red-500 text-white text-sm py-1 rounded hover:bg-red-600"
+                className="w-full bg-red-500 text-white text-sm py-1 rounded hover:bg-red-600 transition-colors"
               >
                 Delete
               </button>

@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getAllProjects } from "../../../services/projectService";
+import {
+  getAllProjects,
+  deleteProject,
+} from "../../../services/projectService";
 
 import Pagination from "../../../components/Pagination";
 
@@ -22,6 +25,18 @@ export default function AdminProjects() {
       setTotalPages(data.pages);
     } catch (error) {
       console.error("Failed to fetch projects");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm("Are you sure you want to delete this project?")) {
+      try {
+        await deleteProject(id);
+        fetchProjects(currentPage);
+      } catch (error) {
+        console.error("Failed to delete project", error);
+        alert("Failed to delete project");
+      }
     }
   };
 
@@ -59,6 +74,9 @@ export default function AdminProjects() {
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Price
               </th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -75,7 +93,9 @@ export default function AdminProjects() {
                 </td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                   <p className="text-gray-900 whitespace-no-wrap">
-                    {project.location}
+                    {project.location && typeof project.location === "object"
+                      ? `${project.location.city}, ${project.location.state}`
+                      : project.location}
                   </p>
                 </td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
@@ -93,6 +113,28 @@ export default function AdminProjects() {
                       ? `$${project.price.toLocaleString()}`
                       : "POA"}
                   </p>
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                  <div className="flex items-center space-x-2">
+                    <Link
+                      href={`/admin/projects/${project._id}`}
+                      className="text-blue-600 hover:text-blue-900"
+                    >
+                      View
+                    </Link>
+                    <Link
+                      href={`/admin/projects/edit/${project._id}`}
+                      className="text-green-600 hover:text-green-900"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(project._id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

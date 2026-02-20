@@ -19,13 +19,13 @@ export default function Navbar() {
     setUser(null);
     router.push("/login");
   };
+  const home = user?.role === "admin" ? "/admin" : "/dashboard";
 
   return (
-    <nav className="bg-brand-blue p-4 text-white shadow-md sticky top-0 z-50">
+    <nav className="bg-white p-4 text-brand-blue shadow-md sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold tracking-wider">
-          <span className="text-white">DUAL</span>
-          <span className="text-brand-gold">KEY</span>
+        <Link href="/" className="flex items-center">
+          <img src="/logo.png" alt="Dual Key Victoria" className="h-16" />
         </Link>
 
         {/* Desktop Menu */}
@@ -55,7 +55,7 @@ export default function Navbar() {
           {user ? (
             <div className="flex items-center gap-4 ml-4 pl-4 border-l border-gray-600">
               <Link
-                href="/dashboard"
+                href={home}
                 className="hover:text-brand-gold transition font-bold"
               >
                 Dashboard
@@ -167,7 +167,7 @@ export default function Navbar() {
           {user ? (
             <>
               <Link
-                href="/dashboard"
+                href={home}
                 className="block py-2 hover:text-brand-gold font-bold text-brand-gold"
                 onClick={() => setIsOpen(false)}
               >

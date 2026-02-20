@@ -10,8 +10,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --color-brand-blue: #0f172a;
-  --color-brand-gold: #d4af37;
+  --color-brand-blue: #1c1f3f;
+  --color-brand-gold: #bed62f;
 }
 
 @media (prefers-color-scheme: dark) {
