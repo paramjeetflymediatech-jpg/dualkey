@@ -1,5 +1,7 @@
 import Project from "../models/Project.js";
 import ProjectAccess from "../models/ProjectAccess.js";
+import User from "../models/User.js";
+import jwt from "jsonwebtoken";
 
 export const createProject = async (req, res) => {
   const imagePaths = req.files.map((file) => `/uploads/${file.filename}`);
@@ -84,8 +86,43 @@ export const getAllProjects = async (req, res) => {
       order: [["createdAt", "DESC"]],
     });
 
+    let hasGlobalAccess = false;
+    let userId = null;
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer")) {
+      try {
+        const token = authHeader.split(" ")[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        userId = decoded.id;
+        const user = await User.findByPk(userId);
+        if (user?.role === "admin") hasGlobalAccess = true;
+      } catch (err) {}
+    }
+
+    const sanitizedRows = await Promise.all(
+      rows.map(async (project) => {
+        let projectHasAccess = hasGlobalAccess;
+        if (!projectHasAccess && userId) {
+          const access = await ProjectAccess.findOne({
+            where: { userId, projectId: project.id, status: "approved" },
+          });
+          if (access) projectHasAccess = true;
+        }
+
+        const projectData = project.toJSON();
+        projectData.hasAccess = projectHasAccess;
+
+        if (project.associateOnly && !projectHasAccess) {
+          delete projectData.price;
+          delete projectData.priceRange;
+          delete projectData.restrictedDetails;
+        }
+        return projectData;
+      }),
+    );
+
     res.json({
-      projects: rows,
+      projects: sanitizedRows,
       pages: Math.ceil(count / limit),
       currentPage: page,
       totalProjects: count,
@@ -100,8 +137,51 @@ export const getProjectBySlug = async (req, res) => {
   try {
     const project = await Project.findOne({ where: { slug: req.params.slug } });
     if (!project) return res.status(404).json({ message: "Project not found" });
-    res.json(project);
+
+    let hasAccess = false;
+    const authHeader = req.headers.authorization;
+
+    if (authHeader && authHeader.startsWith("Bearer")) {
+      const token = authHeader.split(" ")[1];
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findByPk(decoded.id);
+
+        if (user) {
+          if (user.role === "admin") {
+            hasAccess = true;
+          } else {
+            const access = await ProjectAccess.findOne({
+              where: {
+                userId: user.id || user._id,
+                projectId: project.id || project._id,
+                status: "approved",
+              },
+            });
+            if (access) hasAccess = true;
+          }
+        }
+      } catch (err) {
+        console.error(
+          "Token verification failed in getProjectBySlug:",
+          err.message,
+        );
+      }
+    }
+
+    const projectData = project.toJSON ? project.toJSON() : project;
+    projectData.hasAccess = hasAccess;
+
+    // Redact sensitive info ONLY if associateOnly is true AND no access is granted
+    if (project.associateOnly && !hasAccess) {
+      delete projectData.price;
+      delete projectData.priceRange;
+      delete projectData.restrictedDetails;
+    }
+
+    res.json(projectData);
   } catch (error) {
+    console.error("Error in getProjectBySlug:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };
@@ -111,8 +191,36 @@ export const getProjectById = async (req, res) => {
   try {
     const project = await Project.findByPk(req.params.id);
     if (!project) return res.status(404).json({ message: "Project not found" });
-    res.json(project);
+
+    let hasAccess = false;
+    if (req.user) {
+      if (req.user.role === "admin") {
+        hasAccess = true;
+      } else {
+        const access = await ProjectAccess.findOne({
+          where: {
+            userId: req.user.id || req.user._id,
+            projectId: project.id || project._id,
+            status: "approved",
+          },
+        });
+        if (access) hasAccess = true;
+      }
+    }
+
+    const projectData = project.toJSON ? project.toJSON() : project;
+    projectData.hasAccess = hasAccess;
+
+    // Redact sensitive info ONLY if associateOnly is true AND no access is granted
+    if (project.associateOnly && !hasAccess) {
+      delete projectData.price;
+      delete projectData.priceRange;
+      delete projectData.restrictedDetails;
+    }
+
+    res.json(projectData);
   } catch (error) {
+    console.error("Error in getProjectById:", error);
     res.status(500).json({ message: "Server Error" });
   }
 };

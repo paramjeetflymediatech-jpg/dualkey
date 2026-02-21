@@ -11,7 +11,7 @@ export default function ProjectDetails() {
   const [project, setProject] = useState(null);
 
   useEffect(() => {
-    api.get(`/projects/${slug}`).then(res => {
+    api.get(`/projects/slug/${slug}`).then((res) => {
       setProject(res.data);
     });
   }, [slug]);
@@ -22,16 +22,45 @@ export default function ProjectDetails() {
     <div className="p-10">
       <h1 className="text-3xl">{project.title}</h1>
 
-      {project.price ? (
-        <h2 className="text-xl">Price: ${project.price}</h2>
+      {!project.associateOnly ||
+      (project.associateOnly && project.hasAccess) ||
+      user?.role === "admin" ? (
+        <div className="mt-4">
+          {project.price ? (
+            <h2 className="text-xl font-bold text-brand-blue">
+              Price: ${project.price.toLocaleString()}
+            </h2>
+          ) : project.priceRange &&
+            (project.priceRange.min || project.priceRange.max) ? (
+            <h2 className="text-xl font-bold text-brand-blue">
+              Price Range:{" "}
+              {project.priceRange.min
+                ? `$${Number(project.priceRange.min).toLocaleString()}`
+                : "N/A"}{" "}
+              -{" "}
+              {project.priceRange.max
+                ? `$${Number(project.priceRange.max).toLocaleString()}`
+                : "N/A"}
+            </h2>
+          ) : (
+            <h2 className="text-xl font-bold text-brand-gold text-brand-blue">
+              Price: POA
+            </h2>
+          )}
+        </div>
       ) : (
-        <div>
-          <p>Pricing hidden</p>
+        <div className="mt-6 p-6 border-2 border-dashed border-gray-200 rounded-lg text-center">
+          <p className="text-gray-600 mb-4">
+            Pricing and restricted details are hidden for this exclusive
+            project.
+          </p>
           <button
             onClick={() =>
-              api.post("/access", { projectId: project._id })
+              api
+                .post("/access", { projectId: project.id || project._id })
+                .then(() => alert("Access requested!"))
             }
-            className="bg-blue-500 text-white px-4 py-2"
+            className="bg-brand-blue text-white px-6 py-3 rounded font-bold hover:bg-opacity-90 transition"
           >
             Request Access
           </button>

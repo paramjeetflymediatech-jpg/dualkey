@@ -24,9 +24,35 @@ L.Icon.Default.mergeOptions({
 
 function LocationMarker({ position, setPosition, setCoordinates }) {
   const map = useMapEvents({
-    click(e) {
+    async click(e) {
+      const { lat, lng } = e.latlng;
       setPosition(e.latlng);
-      setCoordinates(e.latlng);
+
+      // Reverse geocode to get address details
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/geocoding/reverse?lat=${lat}&lon=${lng}`,
+        );
+        const data = await response.json();
+        const fullData = {
+          lat,
+          lng,
+          address: data.display_name || "",
+          city:
+            data.address?.city ||
+            data.address?.town ||
+            data.address?.suburb ||
+            "",
+          state: data.address?.state || "",
+          country: data.address?.country || "",
+          postcode: data.address?.postcode || "",
+        };
+        setCoordinates(fullData);
+      } catch (error) {
+        console.error("Error reverse geocoding:", error);
+        setCoordinates({ lat, lng });
+      }
+
       map.flyTo(e.latlng, map.getZoom());
     },
   });
@@ -50,12 +76,24 @@ function SearchField({ setPosition, setCoordinates }) {
 
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${query}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/geocoding/search?q=${encodeURIComponent(query)}`,
       );
       const data = await response.json();
       if (data && data.length > 0) {
         const { lat, lon } = data[0];
-        const newPos = { lat: parseFloat(lat), lng: parseFloat(lon) };
+        const newPos = {
+          lat: parseFloat(lat),
+          lng: parseFloat(lon),
+          address: data[0].display_name,
+          city:
+            data[0].address?.city ||
+            data[0].address?.town ||
+            data[0].address?.suburb ||
+            "",
+          state: data[0].address?.state || "",
+          country: data[0].address?.country || "",
+          postcode: data[0].address?.postcode || "",
+        };
         setPosition(newPos);
         setCoordinates(newPos);
         map.flyTo(newPos, 13);
@@ -102,8 +140,16 @@ export default function MapPicker({
     }
   }, [initialLat, initialLng]);
 
-  const setCoordinates = (latlng) => {
-    onLocationSelect(latlng.lat, latlng.lng);
+  const setCoordinates = (data) => {
+    onLocationSelect(
+      data.lat,
+      data.lng,
+      data.address,
+      data.city,
+      data.state,
+      data.country,
+      data.postcode,
+    );
   };
 
   return (

@@ -1,11 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
 import path from "path";
 import helmet from "helmet";
-import sequelize from "./config/database.js";
-
+import rateLimit from "express-rate-limit";
 // Import Routes
 import authRoutes from "./routes/authRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
@@ -15,19 +14,30 @@ import inquiryRoutes from "./routes/inquiryRoutes.js";
 import galleryRoutes from "./routes/galleryRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import accessRoutes from "./routes/accessRoutes.js";
+import geocodingRoutes from "./routes/geocodingRoutes.js";
 
-dotenv.config();
+// database connection
+import connectDB from "./config/db.js";
+import sequelize from "./config/database.js";
 
 const app = express();
 
-// Middleware
+app.set("trust proxy", 1);
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,
+//   max: 100,
+// });
+
+// // Middleware
+// app.use(limiter);
+// app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5000"],
+    origin: [process.env.FRONTEND_URL, process.env.NEXT_PUBLIC_IMAGE_URL],
     credentials: true,
   }),
 );
-app.use(helmet({ crossOriginResourcePolicy: false }));
+// app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(express.json());
 
 // Serve static files
@@ -43,6 +53,7 @@ app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/access", accessRoutes);
+app.use("/api/geocoding", geocodingRoutes);
 
 // Connect to Database based on Type
 const PORT = process.env.PORT || 5000;
@@ -54,7 +65,7 @@ const startServer = async () => {
       await sequelize.sync({ alter: true });
       console.log("MySQL Database Connected & Synced");
     } else {
-      await mongoose.connect(process.env.MONGO_URI);
+      await connectDB();
       console.log("MongoDB Connected");
     }
 

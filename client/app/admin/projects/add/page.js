@@ -358,11 +358,24 @@ export default function AddProject() {
               <MapPicker
                 initialLat={formData.location.coordinates.lat}
                 initialLng={formData.location.coordinates.lng}
-                onLocationSelect={(lat, lng) => {
+                onLocationSelect={(
+                  lat,
+                  lng,
+                  address,
+                  city,
+                  state,
+                  country,
+                  postcode,
+                ) => {
                   setFormData((prev) => ({
                     ...prev,
                     location: {
                       ...prev.location,
+                      address: address || prev.location.address,
+                      city: city || prev.location.city,
+                      state: state || prev.location.state,
+                      country: country || prev.location.country,
+                      postcode: postcode || prev.location.postcode,
                       coordinates: {
                         lat: lat,
                         lng: lng,

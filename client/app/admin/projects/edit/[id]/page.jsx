@@ -1,17 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import {
   getProjectById,
   updateProject,
 } from "../../../../../services/projectService";
+import dynamic from "next/dynamic";
+const MapPicker = dynamic(() => import("../../../../../components/MapPicker"), {
+  ssr: false,
+  loading: () => <p>Loading Map...</p>,
+});
 
 export default function EditProject({ params }) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    price: "",
+    priceRange: {
+      min: "",
+      max: "",
+      currency: "AUD",
+    },
     category: "Dual Key",
     location: {
       address: "",
@@ -19,6 +28,7 @@ export default function EditProject({ params }) {
       state: "",
       postcode: "",
       country: "",
+      coordinates: { lat: null, lng: null },
     },
     developer: "",
     type: "",
@@ -28,10 +38,11 @@ export default function EditProject({ params }) {
     completionDate: "",
     associateOnly: false,
     images: [],
+    price: "", // Keeping for backward compatibility if needed in UI fallback
   });
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const { id } = params;
+  const { id } = use(params);
 
   useEffect(() => {
     if (id) {
@@ -48,6 +59,11 @@ export default function EditProject({ params }) {
           ? JSON.parse(data.location)
           : data.location || {};
 
+      const priceRange =
+        typeof data.priceRange === "string"
+          ? JSON.parse(data.priceRange)
+          : data.priceRange || { min: "", max: "", currency: "AUD" };
+
       setFormData({
         ...data,
         location: {
@@ -56,8 +72,13 @@ export default function EditProject({ params }) {
           state: location.state || "",
           postcode: location.postcode || "",
           country: location.country || "",
+          coordinates: location.coordinates || { lat: null, lng: null },
         },
-        // Handle dates if necessary, check format
+        priceRange: {
+          min: priceRange.min || "",
+          max: priceRange.max || "",
+          currency: priceRange.currency || "AUD",
+        },
       });
       setLoading(false);
     } catch (error) {
@@ -74,6 +95,15 @@ export default function EditProject({ params }) {
         ...prev,
         location: {
           ...prev.location,
+          [field]: value,
+        },
+      }));
+    } else if (name.includes("priceRange.")) {
+      const field = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        priceRange: {
+          ...prev.priceRange,
           [field]: value,
         },
       }));
@@ -118,6 +148,7 @@ export default function EditProject({ params }) {
       payload.append("availableUnits", formData.availableUnits);
       payload.append("completionDate", formData.completionDate);
       payload.append("associateOnly", formData.associateOnly);
+      payload.append("priceRange", JSON.stringify(formData.priceRange));
 
       // Images not handled in this basic edit form yet
 
@@ -182,15 +213,51 @@ export default function EditProject({ params }) {
               className="w-full px-3 py-2 border rounded"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">Price</label>
-            <input
-              type="number"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-            />
+          <div className="md:col-span-2 border p-4 rounded bg-gray-50">
+            <label className="block text-gray-700 font-bold mb-2">
+              Price Range
+            </label>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">
+                  Min Price
+                </label>
+                <input
+                  type="number"
+                  name="priceRange.min"
+                  placeholder="Min"
+                  value={formData.priceRange.min}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">
+                  Max Price
+                </label>
+                <input
+                  type="number"
+                  name="priceRange.max"
+                  placeholder="Max"
+                  value={formData.priceRange.max}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-500 mb-1">
+                  Currency
+                </label>
+                <input
+                  type="text"
+                  name="priceRange.currency"
+                  placeholder="Currency"
+                  value={formData.priceRange.currency}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded"
+                />
+              </div>
+            </div>
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">
@@ -313,6 +380,42 @@ export default function EditProject({ params }) {
               className="w-full px-3 py-2 border rounded"
             />
           </div>
+        </div>
+
+        <div className="md:col-span-2 mt-4">
+          <label className="block text-gray-700 font-bold mb-2">
+            Select on Map
+          </label>
+          <p className="text-sm text-gray-500 mb-2">
+            Search for an address or click on the map to automatically set the
+            address fields.
+          </p>
+          <MapPicker
+            initialLat={formData.location.coordinates?.lat}
+            initialLng={formData.location.coordinates?.lng}
+            onLocationSelect={(
+              lat,
+              lng,
+              address,
+              city,
+              state,
+              country,
+              postcode,
+            ) => {
+              setFormData((prev) => ({
+                ...prev,
+                location: {
+                  ...prev.location,
+                  address: address || prev.location.address,
+                  city: city || prev.location.city,
+                  state: state || prev.location.state,
+                  country: country || prev.location.country,
+                  postcode: postcode || prev.location.postcode,
+                  coordinates: { lat, lng },
+                },
+              }));
+            }}
+          />
         </div>
 
         <div className="mb-4 mt-6">

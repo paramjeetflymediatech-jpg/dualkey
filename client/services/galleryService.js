@@ -6,8 +6,8 @@ export const image_url =
 export const getGalleryItems = async (page = 1, limit = 12) => {
   const response = await api.get(`/gallery?page=${page}&limit=${limit}`);
   let data = response.data.data || response.data;
-  if (data.galleryItems) {
-    data.galleryItems = data.galleryItems.map((galleryItem) => {
+  if (data.gallery) {
+    data.gallery = data.gallery.map((galleryItem) => {
       if (!galleryItem._id) {
         galleryItem._id = galleryItem?.id;
       }

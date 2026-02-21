@@ -66,6 +66,12 @@ export default function AdminLayout({ children }) {
           >
             Users
           </Link>
+          <Link
+            href="/admin/access"
+            className="block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 hover:text-brand-gold font-bold text-brand-gold"
+          >
+            Access Requests
+          </Link>
           <div className="pt-4 mt-4 border-t border-gray-700">
             <Link
               href="/"

@@ -91,7 +91,10 @@ export default function TerraceRange() {
                       <p className="font-bold text-brand-gold">
                         {project.price
                           ? `$${project.price.toLocaleString()}`
-                          : "POA"}
+                          : project.priceRange &&
+                              (project.priceRange.min || project.priceRange.max)
+                            ? `$${Number(project.priceRange.min).toLocaleString()} - $${Number(project.priceRange.max).toLocaleString()}`
+                            : "POA"}
                       </p>
                     </div>
                   </div>

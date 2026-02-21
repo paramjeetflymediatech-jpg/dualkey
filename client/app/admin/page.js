@@ -55,14 +55,19 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Card 3 */}
-        <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500">
-          <h2 className="text-gray-500 text-sm font-medium uppercase">
-            Pending Access Requests
-          </h2>
-          <p className="text-3xl font-bold text-gray-800 mt-2">
-            {stats.pendingRequests}
-          </p>
-        </div>
+        <a
+          href="/admin/access"
+          className="block hover:scale-105 transition-transform duration-200"
+        >
+          <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500 h-full">
+            <h2 className="text-gray-500 text-sm font-medium uppercase">
+              Pending Access Requests
+            </h2>
+            <p className="text-3xl font-bold text-gray-800 mt-2">
+              {stats.pendingRequests}
+            </p>
+          </div>
+        </a>
 
         {/* Card 4 */}
         <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">

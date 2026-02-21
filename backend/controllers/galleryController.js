@@ -1,6 +1,7 @@
 import Gallery from "../models/Gallery.js";
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 
 // Get all gallery items
 export const getGalleryItems = async (req, res) => {
@@ -33,10 +34,33 @@ export const createGalleryItem = async (req, res) => {
   }
 
   const { type, caption, category } = req.body;
+  const filePath = req.file.path;
+  const targetPath = path.join("uploads", `opt-${req.file.filename}`);
 
   try {
+    // Process image with sharp
+    const imageProcessor = sharp(filePath);
+    const metadata = await imageProcessor.metadata();
+
+    let processedImage = imageProcessor;
+
+    // For 360 images, resize to max 4096px width for WebGL safe limit
+    if (type === "360" && metadata.width > 4096) {
+      processedImage = processedImage.resize(4096);
+    }
+
+    // Always optimize quality
+    await processedImage
+      .jpeg({ quality: 90, mozjpeg: true })
+      .toFile(targetPath);
+
+    // Remove original uploaded file
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
     const galleryItem = await Gallery.create({
-      image: `/uploads/${req.file.filename}`,
+      image: `/uploads/opt-${req.file.filename}`,
       type: type || "image",
       caption,
       category: category || "All",
@@ -44,7 +68,8 @@ export const createGalleryItem = async (req, res) => {
 
     res.status(201).json(galleryItem);
   } catch (error) {
-    res.status(500).json({ message: "Server Error" });
+    console.error("Sharp processing error:", error);
+    res.status(500).json({ message: "Server Error during image processing" });
   }
 };
 

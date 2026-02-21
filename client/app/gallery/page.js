@@ -53,6 +53,9 @@ export default function Gallery() {
           panorama: `${image_url}${selectedImage.image}`,
           autoLoad: true,
           compass: true,
+          hfov: 100,
+          haov: 360,
+          vaov: 180,
         });
       }
     }
@@ -133,7 +136,7 @@ export default function Gallery() {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredItems.map((item,index) => (
+              {filteredItems.map((item, index) => (
                 <div
                   key={index}
                   className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 relative group cursor-pointer border border-gray-100"
@@ -147,7 +150,7 @@ export default function Gallery() {
                     />
 
                     {/* Overlay */}
-                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 -z-10 transition-all duration-300 flex items-center justify-center">
                       {item.type === "360" ? (
                         <div className="bg-white bg-opacity-90 p-3 rounded-full transform scale-0 group-hover:scale-100 transition-transform duration-300 shadow-lg">
                           <svg
@@ -172,7 +175,7 @@ export default function Gallery() {
                           </svg>
                         </div>
                       ) : (
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="opacity-0  group-hover:opacity-100 transition-opacity duration-300">
                           {/* Optional: Icon for regular images */}
                         </div>
                       )}
