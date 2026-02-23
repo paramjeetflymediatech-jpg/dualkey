@@ -36,8 +36,10 @@ export const getCurrentUser = () => {
 };
 
 // User Management (Admin)
-export const getAllUsers = async (page = 1, limit = 10) => {
-  const response = await api.get(`/users?page=${page}&limit=${limit}`);
+export const getAllUsers = async (page = 1, limit = 10, excludeRole = "") => {
+  const response = await api.get(
+    `/users?page=${page}&limit=${limit}${excludeRole ? `&excludeRole=${excludeRole}` : ""}`,
+  );
   const data = response.data.data || response.data;
   data.users = data.users.map((user) => {
     if (!user._id) {

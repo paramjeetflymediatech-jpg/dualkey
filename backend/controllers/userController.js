@@ -1,9 +1,7 @@
+import { Op } from "sequelize";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 
-// @desc    Get all users
-// @route   GET /api/users
-// @access  Private/Admin
 // @desc    Get all users
 // @route   GET /api/users
 // @access  Private/Admin
@@ -12,8 +10,15 @@ export const getAllUsers = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
+    const excludeRole = req.query.excludeRole;
+
+    const where = {};
+    if (excludeRole) {
+      where.role = { [Op.ne]: excludeRole };
+    }
 
     const { count, rows } = await User.findAndCountAll({
+      where,
       limit,
       offset,
       order: [["createdAt", "DESC"]],
@@ -71,7 +76,6 @@ export const getUserById = async (req, res) => {
     const user = await User.findByPk(req.params.id, {
       attributes: { exclude: ["password"] },
     });
-    console.log(user);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }

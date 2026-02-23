@@ -49,11 +49,16 @@ export const footerLinks = [
   },
   {
     id: 5,
+    name: "Insights",
+    url: "/blog",
+  },
+  {
+    id: 6,
     name: "Learn",
     url: "/learn",
   },
   {
-    id: 6,
+    id: 7,
     name: "Contact Us",
     url: "/contact",
   },

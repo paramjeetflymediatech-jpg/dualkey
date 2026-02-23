@@ -60,3 +60,16 @@ export const getInquiryById = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// Delete Inquiry (Admin)
+export const deleteInquiry = async (req, res) => {
+  try {
+    const inquiry = await Inquiry.findByPk(req.params.id);
+    if (!inquiry) return res.status(404).json({ message: "Inquiry not found" });
+
+    await inquiry.destroy();
+    res.json({ message: "Inquiry deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};

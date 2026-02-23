@@ -32,3 +32,8 @@ export const getInquiryById = async (id) => {
   }
   return inquiry;
 };
+
+export const deleteInquiry = async (id) => {
+  const response = await api.delete(`/inquiries/${id}`);
+  return response.data;
+};

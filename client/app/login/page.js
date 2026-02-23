@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useRouter } from "next/navigation";
-import { login } from "../../services/authService";
+import { AuthContext } from "../../context/AuthContext";
 
 import toast from "react-hot-toast";
 import Navbar from "../../components/Navbar";
@@ -12,11 +12,12 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { login: contextLogin } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login({ email, password });
+      await contextLogin(email, password);
       toast.success("Login successful");
       router.push("/dashboard");
     } catch (error) {

@@ -1,7 +1,10 @@
 "use client";
 
 import { createContext, useState, useEffect } from "react";
-import api from "../services/api";
+import {
+  login as authLogin,
+  logout as authLogout,
+} from "../services/authService";
 
 export const AuthContext = createContext();
 
@@ -20,13 +23,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const { data } = await api.post("/auth/login", { email, password });
-    localStorage.setItem("user", JSON.stringify(data));
+    const data = await authLogin({ email, password });
     setUser(data);
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
+    authLogout();
     setUser(null);
   };
 

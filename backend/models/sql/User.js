@@ -16,7 +16,6 @@ const User = sequelize.define(
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
       validate: {
         isEmail: true,
       },
@@ -36,6 +35,13 @@ const User = sequelize.define(
   },
   {
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ["email"],
+        name: "users_email_unique",
+      },
+    ],
   },
 );
 

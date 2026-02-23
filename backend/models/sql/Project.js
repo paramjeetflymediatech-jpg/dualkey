@@ -85,10 +85,6 @@ const Project = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    price: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-    },
     category: {
       type: DataTypes.ENUM("Dual Key", "Terrace", "Land"),
       defaultValue: "Dual Key",

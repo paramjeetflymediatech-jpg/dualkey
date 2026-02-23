@@ -15,6 +15,7 @@ import galleryRoutes from "./routes/galleryRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import accessRoutes from "./routes/accessRoutes.js";
 import geocodingRoutes from "./routes/geocodingRoutes.js";
+import brochureRoutes from "./routes/brochureRoutes.js";
 
 // database connection
 import connectDB from "./config/db.js";
@@ -23,21 +24,13 @@ import sequelize from "./config/database.js";
 const app = express();
 
 app.set("trust proxy", 1);
-// const limiter = rateLimit({
-//   windowMs: 15 * 60 * 1000,
-//   max: 100,
-// });
 
-// // Middleware
-// app.use(limiter);
-// app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL, process.env.NEXT_PUBLIC_IMAGE_URL],
     credentials: true,
   }),
 );
-// app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(express.json());
 
 // Serve static files
@@ -54,6 +47,7 @@ app.use("/api/gallery", galleryRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/access", accessRoutes);
 app.use("/api/geocoding", geocodingRoutes);
+app.use("/api/brochures", brochureRoutes);
 
 // Connect to Database based on Type
 const PORT = process.env.PORT || 5000;
@@ -62,7 +56,7 @@ const startServer = async () => {
   try {
     const dbType = process.env.DB_TYPE || "mysql";
     if (dbType === "mysql") {
-      await sequelize.sync({ alter: true });
+      await sequelize.sync();
       console.log("MySQL Database Connected & Synced");
     } else {
       await connectDB();

@@ -29,3 +29,17 @@ export const createPost = async (postData) => {
   });
   return response.data;
 };
+
+export const updatePost = async (id, postData) => {
+  const response = await api.put(`/posts/${id}`, postData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+export const deletePost = async (id) => {
+  const response = await api.delete(`/posts/${id}`);
+  return response.data;
+};

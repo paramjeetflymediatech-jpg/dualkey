@@ -60,7 +60,7 @@ export const createGalleryItem = async (req, res) => {
     }
 
     const galleryItem = await Gallery.create({
-      image: `/uploads/opt-${req.file.filename}`,
+      image: `/${targetPath.replace(/\\/g, "/")}`,
       type: type || "image",
       caption,
       category: category || "All",
@@ -82,9 +82,26 @@ export const deleteGalleryItem = async (req, res) => {
     }
 
     // Attempt to delete file from uploads
-    const filePath = path.join(path.resolve(), item.image);
+    const __dirname = path.resolve();
+    const filePath = path.join(
+      __dirname,
+      item.image.startsWith("/") ? item.image.substring(1) : item.image,
+    );
     if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+      try {
+        fs.unlinkSync(filePath);
+
+        // Try to remove the category folder if it's empty
+        const dirPath = path.dirname(filePath);
+        if (
+          dirPath.includes("gallery") &&
+          fs.readdirSync(dirPath).length === 0
+        ) {
+          fs.rmdirSync(dirPath);
+        }
+      } catch (err) {
+        console.error("Failed to delete gallery file or folder:", err);
+      }
     }
 
     await item.destroy();

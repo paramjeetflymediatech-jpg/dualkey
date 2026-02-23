@@ -4,7 +4,14 @@ import User from "../models/User.js";
 
 // Register User
 export const register = async (req, res) => {
-  const { name, email, password } = req.body;
+  let { name, email, password, isApproved = false } = req.body;
+
+  const admin = req?.user;
+  if (admin) {
+    if (admin.role == "admin") {
+      isApproved = true;
+    }
+  }
   try {
     let user = await User.findOne({ where: { email } });
     if (user) return res.status(400).json({ message: "User already exists" });
@@ -16,6 +23,7 @@ export const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      isApproved,
     });
 
     res.status(201).json({

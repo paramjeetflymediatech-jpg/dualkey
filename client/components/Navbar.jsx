@@ -1,24 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getCurrentUser, logout } from "../services/authService";
+import { useRouter, usePathname } from "next/navigation";
+import { useContext, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Navbar() {
-  const [user, setUser] = useState(null);
+  const { user, logout: contextLogout } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    setUser(getCurrentUser());
-  }, []);
+  const pathname = usePathname();
 
   const handleLogout = () => {
-    logout();
-    setUser(null);
+    contextLogout();
     router.push("/login");
   };
+
+  const isActive = (path) => {
+    if (path === "/") return pathname === "/";
+    return pathname.startsWith(path);
+  };
+
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Locations", href: "/locations" },
+    { name: "Terrace Range", href: "/terrace-range" },
+    { name: "Gallery", href: "/gallery" },
+    { name: "Insights", href: "/blog" },
+    { name: "Learn", href: "/learn" },
+    { name: "Contact Us", href: "/contact" },
+  ];
+
   const home = user?.role === "admin" ? "/admin" : "/dashboard";
 
   return (
@@ -30,33 +42,29 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-6 font-medium text-sm lg:text-base">
-          <Link href="/" className="hover:text-brand-gold transition">
-            Home
-          </Link>
-          <Link href="/locations" className="hover:text-brand-gold transition">
-            Locations
-          </Link>
-          <Link
-            href="/terrace-range"
-            className="hover:text-brand-gold transition"
-          >
-            Terrace Range
-          </Link>
-          <Link href="/gallery" className="hover:text-brand-gold transition">
-            Gallery
-          </Link>
-          <Link href="/learn" className="hover:text-brand-gold transition">
-            Learn
-          </Link>
-          <Link href="/contact" className="hover:text-brand-gold transition">
-            Contact Us
-          </Link>
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`${
+                isActive(link.href)
+                  ? "text-brand-gold font-black border-b-2 border-brand-gold"
+                  : "hover:text-brand-gold transition"
+              }`}
+            >
+              {link.name}
+            </Link>
+          ))}
 
           {user ? (
             <div className="flex items-center gap-4 ml-4 pl-4 border-l border-gray-600">
               <Link
                 href={home}
-                className="hover:text-brand-gold transition font-bold"
+                className={`${
+                  isActive(home)
+                    ? "text-brand-gold font-black"
+                    : "hover:text-brand-gold transition font-bold"
+                }`}
               >
                 Dashboard
               </Link>
@@ -65,7 +73,7 @@ export default function Navbar() {
               </div>
               <button
                 onClick={handleLogout}
-                className="border border-white px-3 py-1 rounded hover:bg-white hover:text-brand-blue transition text-xs uppercase"
+                className="border border-brand-blue px-3 py-1 rounded hover:bg-brand-blue hover:text-white transition text-xs uppercase"
               >
                 Logout
               </button>
@@ -74,7 +82,11 @@ export default function Navbar() {
             <div className="flex gap-4 ml-4 items-center">
               <Link
                 href="/login"
-                className="hover:text-brand-gold transition border-l border-gray-600 pl-4"
+                className={`${
+                  isActive("/login")
+                    ? "text-brand-gold font-black"
+                    : "hover:text-brand-gold transition border-l border-gray-600 pl-4"
+                }`}
               >
                 Login
               </Link>
@@ -121,54 +133,28 @@ export default function Navbar() {
       {/* Mobile Menu */}
       {isOpen && (
         <div className="md:hidden mt-4 space-y-4 flex flex-col pb-4 border-t border-gray-700 pt-4 px-2">
-          <Link
-            href="/"
-            className="block py-2 hover:text-brand-gold border-b border-gray-800"
-            onClick={() => setIsOpen(false)}
-          >
-            Home
-          </Link>
-          <Link
-            href="/locations"
-            className="block py-2 hover:text-brand-gold border-b border-gray-800"
-            onClick={() => setIsOpen(false)}
-          >
-            Locations
-          </Link>
-          <Link
-            href="/terrace-range"
-            className="block py-2 hover:text-brand-gold border-b border-gray-800"
-            onClick={() => setIsOpen(false)}
-          >
-            Terrace Range
-          </Link>
-          <Link
-            href="/gallery"
-            className="block py-2 hover:text-brand-gold border-b border-gray-800"
-            onClick={() => setIsOpen(false)}
-          >
-            Gallery
-          </Link>
-          <Link
-            href="/learn"
-            className="block py-2 hover:text-brand-gold border-b border-gray-800"
-            onClick={() => setIsOpen(false)}
-          >
-            Learn
-          </Link>
-          <Link
-            href="/contact"
-            className="block py-2 hover:text-brand-gold border-b border-gray-800"
-            onClick={() => setIsOpen(false)}
-          >
-            Contact Us
-          </Link>
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`block py-2 border-b border-gray-100 ${
+                isActive(link.href)
+                  ? "text-brand-gold font-black pl-2 border-l-4 border-brand-gold"
+                  : "hover:text-brand-gold"
+              }`}
+              onClick={() => setIsOpen(false)}
+            >
+              {link.name}
+            </Link>
+          ))}
 
           {user ? (
             <>
               <Link
                 href={home}
-                className="block py-2 hover:text-brand-gold font-bold text-brand-gold"
+                className={`block py-2 font-black ${
+                  isActive(home) ? "text-brand-gold" : "hover:text-brand-gold"
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 Dashboard
@@ -190,14 +176,18 @@ export default function Navbar() {
             <div className="flex flex-col gap-3 mt-4">
               <Link
                 href="/login"
-                className="block text-center py-2 border border-gray-600 rounded text-gray-300"
+                className={`block text-center py-2 border border-gray-200 rounded ${
+                  isActive("/login")
+                    ? "text-brand-gold font-black bg-gray-50"
+                    : "text-brand-blue"
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="block text-center py-3 bg-brand-gold text-brand-blue font-bold rounded-sm"
+                className="block text-center py-3 bg-brand-gold text-brand-blue font-bold rounded-sm shadow-md"
                 onClick={() => setIsOpen(false)}
               >
                 Enquire Now

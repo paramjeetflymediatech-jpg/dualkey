@@ -4,6 +4,7 @@ import Post from "./Post.js";
 import Inquiry from "./Inquiry.js";
 import Gallery from "./Gallery.js";
 import ProjectAccess from "./ProjectAccess.js";
+import Brochure from "./Brochure.js";
 
 // Associations
 User.hasMany(Post, { foreignKey: "authorId" });
@@ -15,6 +16,4 @@ ProjectAccess.belongsTo(User, { foreignKey: "userId" });
 Project.hasMany(ProjectAccess, { foreignKey: "projectId" });
 ProjectAccess.belongsTo(Project, { foreignKey: "projectId" });
 
-
-
-export { User, Project, Post, Inquiry, Gallery, ProjectAccess };
+export { User, Project, Post, Inquiry, Gallery, ProjectAccess, Brochure };
