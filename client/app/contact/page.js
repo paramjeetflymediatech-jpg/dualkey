@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Navbar from "../../components/Navbar";
-import { createPost } from "../../services/contentService";
+import { createInquiry } from "../../services/inquiryService";
 import { Footer } from "../../components/Footer";
 import toast from "react-hot-toast";
 
@@ -27,7 +27,10 @@ export default function Contact() {
       toast.success("Message sent successfully!");
       setFormData({ name: "", email: "", phone: "", message: "" });
     } catch (error) {
-      toast.error("Failed to send message. Please try again.");
+      toast.error(
+        error.response.data.message ||
+          "Failed to send message. Please try again.",
+      );
     }
   };
 

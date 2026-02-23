@@ -19,7 +19,7 @@ export default function AccessRequestsPage() {
       setLoading(false);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to fetch access requests");
+      toast.error(err.response.data.message);
       setLoading(false);
     }
   };
@@ -31,7 +31,7 @@ export default function AccessRequestsPage() {
       fetchRequests();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to approve access");
+      toast.error(err.response.data.message);
     }
   };
 
@@ -46,7 +46,7 @@ export default function AccessRequestsPage() {
       fetchRequests();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to remove request");
+      toast.error(err.response.data.message);
     }
   };
 

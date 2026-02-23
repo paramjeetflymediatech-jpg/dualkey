@@ -12,7 +12,7 @@ export default function AdminLayout({ children }) {
   useEffect(() => {
     const currentUser = getCurrentUser();
     if (!currentUser || currentUser.role !== "admin") {
-      console.log("Redirecting: User not found or not admin", currentUser);
+      toast.error("You are not authorized to access this page");
       router.push("/dashboard"); // Redirect non-admins
       return;
     }

@@ -29,7 +29,7 @@ export default function Locations() {
       ];
       setLocations(uniqueLocations);
     } catch (error) {
-      console.error("Failed to fetch projects");
+      console.error(error.response.data.message);
     }
   };
 

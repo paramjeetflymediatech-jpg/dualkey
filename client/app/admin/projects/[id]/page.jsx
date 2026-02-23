@@ -22,10 +22,9 @@ export default function ProjectDetails({ params }) {
   const fetchProject = async (projectId) => {
     try {
       const data = await getProjectById(projectId);
-      console.log(data);
       setProject(data);
     } catch (error) {
-      console.error("Failed to fetch project");
+      console.error(error.response.data.message);
     }
   };
 
@@ -35,8 +34,8 @@ export default function ProjectDetails({ params }) {
         await deleteProject(id);
         router.push("/admin/projects");
       } catch (error) {
-        console.error("Failed to delete project");
-        alert("Failed to delete project");
+        console.error(error.response.data.message);
+        alert(error.response.data.message);
       }
     }
   };

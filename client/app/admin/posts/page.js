@@ -21,7 +21,7 @@ export default function AdminPosts() {
       setPosts(data.posts);
       setTotalPages(data.pages);
     } catch (error) {
-      console.error("Failed to fetch posts");
+      console.error(error.response.data.message);
     }
   };
 

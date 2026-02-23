@@ -62,7 +62,7 @@ export default function AdminGallery() {
       setItems(data.gallery);
       setTotalPages(data.pages);
     } catch (error) {
-      console.error("Failed to fetch gallery");
+      console.error(error.response.data.message);
     }
   };
 
@@ -104,8 +104,8 @@ export default function AdminGallery() {
       document.getElementById("fileInput").value = "";
       fetchGallery(currentPage);
     } catch (error) {
-      console.error(error);
-      alert("Failed to add item");
+      console.error(error.response.data.message);
+      alert(error.response.data.message);
     } finally {
       setLoading(false);
     }

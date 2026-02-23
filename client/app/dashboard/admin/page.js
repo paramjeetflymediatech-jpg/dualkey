@@ -7,9 +7,14 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    api.get("/admin/dashboard").then(res => {
-      setStats(res.data);
-    });
+    api
+      .get("/admin/dashboard")
+      .then((res) => {
+        setStats(res.data);
+      })
+      .catch((error) => {
+        console.error(error.response.data.message);
+      });
   }, []);
 
   if (!stats) return <div>Loading...</div>;

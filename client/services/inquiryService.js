@@ -23,3 +23,12 @@ export const updateInquiryStatus = async (id, status) => {
   const response = await api.patch(`/inquiries/${id}/status`, { status });
   return response.data;
 };
+
+export const getInquiryById = async (id) => {
+  const response = await api.get(`/inquiries/${id}`);
+  let inquiry = response.data.data || response.data;
+  if (!inquiry._id) {
+    inquiry._id = inquiry?.id;
+  }
+  return inquiry;
+};

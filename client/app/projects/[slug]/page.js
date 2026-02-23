@@ -11,9 +11,14 @@ export default function ProjectDetails() {
   const [project, setProject] = useState(null);
 
   useEffect(() => {
-    api.get(`/projects/slug/${slug}`).then((res) => {
-      setProject(res.data);
-    });
+    api
+      .get(`/projects/slug/${slug}`)
+      .then((res) => {
+        setProject(res.data);
+      })
+      .catch((error) => {
+        console.error(error.response.data.message);
+      });
   }, [slug]);
 
   if (!project) return <div>Loading...</div>;
@@ -59,6 +64,9 @@ export default function ProjectDetails() {
               api
                 .post("/access", { projectId: project.id || project._id })
                 .then(() => alert("Access requested!"))
+                .catch((error) => {
+                  console.error(error.response.data.message);
+                })
             }
             className="bg-brand-blue text-white px-6 py-3 rounded font-bold hover:bg-opacity-90 transition"
           >

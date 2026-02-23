@@ -16,12 +16,10 @@ export default function AdminDashboardPage() {
     const fetchStats = async () => {
       try {
         const res = await api.get("/admin/dashboard");
-        console.log(res.data);
-        // Assuming the backend endpoint returns these structure
-        // If not, we might need to update the backend admin controller to include inquiries count
         setStats(res.data);
       } catch (err) {
-        console.error(err);
+        console.error(err.response.data.message);
+        toast.error(err.response.data.message);
       }
     };
     fetchStats();

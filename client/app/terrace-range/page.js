@@ -21,12 +21,11 @@ export default function TerraceRange() {
     setLoading(true);
     try {
       const data = await getAllProjects();
-      console.log(data);
       setProjects(data.projects);
       setTotalPages(data.pages);
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch projects", error);
+      console.error(error.response.data.message);
       setLoading(false);
     }
   };

@@ -82,7 +82,7 @@ export default function EditProject({ params }) {
       });
       setLoading(false);
     } catch (error) {
-      console.error("Failed to fetch project");
+      console.error(error.response.data.message);
       setLoading(false);
     }
   };
@@ -155,8 +155,8 @@ export default function EditProject({ params }) {
       await updateProject(id, payload);
       router.push("/admin/projects");
     } catch (error) {
-      console.error("Failed to update project", error);
-      alert("Failed to update project");
+      console.error(error.response.data.message);
+      alert(error.response.data.message);
     }
   };
 

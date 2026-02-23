@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getInquiries as getAllInquiries } from "../../../services/inquiryService";
+import Link from "next/link";
 
 import Pagination from "../../../components/Pagination";
 
@@ -20,7 +21,7 @@ export default function AdminInquiries() {
       setInquiries(data.inquiries);
       setTotalPages(data.pages);
     } catch (error) {
-      console.error("Failed to fetch inquiries");
+      console.error(error.response?.data?.message || error.message);
     }
   };
 
@@ -32,9 +33,9 @@ export default function AdminInquiries() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Inquiries</h1>
+      <h1 className="text-3xl font-bold mb-6 text-brand-blue">Inquiries</h1>
 
-      <div className="bg-white rounded shadow overflow-hidden">
+      <div className="bg-white rounded shadow overflow-hidden border border-gray-200">
         <table className="min-w-full leading-normal">
           <thead>
             <tr>
@@ -42,10 +43,10 @@ export default function AdminInquiries() {
                 Name
               </th>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Contact
+                Email
               </th>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                Message
+                Phone
               </th>
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Date
@@ -53,11 +54,14 @@ export default function AdminInquiries() {
               <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Status
               </th>
+              <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody>
             {inquiries.map((inquiry) => (
-              <tr key={inquiry._id}>
+              <tr key={inquiry._id} className="hover:bg-gray-50 transition">
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                   <p className="text-gray-900 whitespace-no-wrap font-bold">
                     {inquiry.name}
@@ -67,12 +71,9 @@ export default function AdminInquiries() {
                   <p className="text-gray-900 whitespace-no-wrap">
                     {inquiry.email}
                   </p>
-                  <p className="text-gray-500 text-xs">{inquiry.phone}</p>
                 </td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <p className="text-gray-900 whitespace-no-wrap truncate max-w-xs">
-                    {inquiry.message}
-                  </p>
+                  <p className="text-gray-500 text-xs">{inquiry.phone}</p>
                 </td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                   <p className="text-gray-900 whitespace-no-wrap">
@@ -80,13 +81,35 @@ export default function AdminInquiries() {
                   </p>
                 </td>
                 <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                  <span className="relative inline-block px-3 py-1 font-semibold text-yellow-900 leading-tight">
+                  <span
+                    className={`relative inline-block px-3 py-1 font-semibold leading-tight ${
+                      inquiry.status === "Closed"
+                        ? "text-green-900"
+                        : inquiry.status === "Contacted"
+                          ? "text-blue-900"
+                          : "text-yellow-900"
+                    }`}
+                  >
                     <span
                       aria-hidden
-                      className="absolute inset-0 bg-yellow-200 opacity-50 rounded-full"
+                      className={`absolute inset-0 opacity-50 rounded-full ${
+                        inquiry.status === "Closed"
+                          ? "bg-green-200"
+                          : inquiry.status === "Contacted"
+                            ? "bg-blue-200"
+                            : "bg-yellow-200"
+                      }`}
                     ></span>
                     <span className="relative">{inquiry.status || "New"}</span>
                   </span>
+                </td>
+                <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm text-right">
+                  <Link
+                    href={`/admin/inquiries/${inquiry._id}`}
+                    className="bg-brand-blue hover:bg-opacity-90 text-white font-bold py-2 px-4 rounded text-xs transition"
+                  >
+                    View
+                  </Link>
                 </td>
               </tr>
             ))}

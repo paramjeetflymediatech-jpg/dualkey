@@ -68,7 +68,7 @@ export default function Gallery() {
       setItems(data.gallery);
       setTotalPages(data.pages);
     } catch (error) {
-      console.error("Failed to fetch gallery");
+      console.error(error.response.data.message);
     } finally {
       setLoading(false);
     }

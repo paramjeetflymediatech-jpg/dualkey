@@ -28,7 +28,10 @@ export default function Register() {
       }
       router.push("/login");
     } catch (error) {
-      toast.error("Registration failed. Email might be taken.");
+      toast.error(
+        error.response.data.message ||
+          "Registration failed. Email might be taken.",
+      );
     }
   };
 

@@ -122,8 +122,8 @@ export default function AddProject() {
       toast.success("Project created successfully!");
       router.push("/admin/projects");
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to create project");
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
     } finally {
       setLoading(false);
     }

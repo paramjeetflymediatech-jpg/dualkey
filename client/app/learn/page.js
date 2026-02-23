@@ -20,9 +20,8 @@ export default function Learn() {
       const data = await getAllPosts(page, 9); // Limit 9 for grid 3x3
       setPosts(data.posts);
       setTotalPages(data.pages);
-      console.log(data);
     } catch (error) {
-      console.error("Failed to fetch posts");
+      console.error(error.response.data.message);
     }
   };
 

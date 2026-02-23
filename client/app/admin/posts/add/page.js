@@ -39,8 +39,8 @@ export default function AddPost() {
       toast.success("Post created successfully!");
       router.push("/admin/posts");
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to create post");
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
     } finally {
       setLoading(false);
     }

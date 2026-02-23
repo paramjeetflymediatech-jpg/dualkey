@@ -16,7 +16,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      let res = await login({ email, password });
+      await login({ email, password });
       toast.success("Login successful");
       router.push("/dashboard");
     } catch (error) {
@@ -25,7 +25,7 @@ export default function Login() {
           "Your account is pending admin approval. Please wait for verification.",
         );
       } else {
-        toast.error("Invalid credentials");
+        toast.error(error.response.data.message || error.message);
       }
     }
   };

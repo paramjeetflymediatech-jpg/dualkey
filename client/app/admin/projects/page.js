@@ -24,7 +24,7 @@ export default function AdminProjects() {
       setProjects(data.projects);
       setTotalPages(data.pages);
     } catch (error) {
-      console.error("Failed to fetch projects");
+      console.error(error.response.data.message);
     }
   };
 
@@ -34,8 +34,8 @@ export default function AdminProjects() {
         await deleteProject(id);
         fetchProjects(currentPage);
       } catch (error) {
-        console.error("Failed to delete project", error);
-        alert("Failed to delete project");
+        console.error(error.response.data.message);
+        alert(error.response.data.message);
       }
     }
   };
