@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import { getPostById } from "../../../services/contentService";
+import { image_url } from "../../../services/contentService";
 
 export default function BlogPostView({ params: paramsPromise }) {
   const params = use(paramsPromise);
@@ -76,7 +77,7 @@ export default function BlogPostView({ params: paramsPromise }) {
             post.image
               ? post.image.startsWith("http")
                 ? post.image
-                : `http://localhost:5000${post.image}`
+                : `${image_url}${post.image}`
               : "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=2000"
           }
           alt={post.title}

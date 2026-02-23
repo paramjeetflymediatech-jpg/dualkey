@@ -6,6 +6,7 @@ import Navbar from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { getAllPosts } from "../../services/contentService";
 import Pagination from "../../components/Pagination";
+import { image_url } from "../../services/contentService";
 
 export default function BlogList() {
   const [posts, setPosts] = useState([]);
@@ -81,7 +82,7 @@ export default function BlogList() {
                           post.image
                             ? post.image.startsWith("http")
                               ? post.image
-                              : `http://localhost:5000${post.image}`
+                              : `${image_url}${post.image}`
                             : "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&q=80&w=800"
                         }
                         alt={post.title}
