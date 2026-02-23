@@ -127,7 +127,7 @@ export const Footer = () => {
                 <li key={link.id}>
                   <Link
                     href={link.url}
-                    className="text-gray-800 hover:text-white transition-colors duration-300 ease-in-out"
+                    className="text-gray-800 hover:text-brand-gold transition-colors duration-300 ease-in-out"
                   >
                     {link.name}
                   </Link>
@@ -146,7 +146,7 @@ export const Footer = () => {
                 <li key={link.id}>
                   <Link
                     href={link.url}
-                    className="text-gray-800 hover:text-white transition-colors duration-300 ease-in-out"
+                    className="text-gray-800 hover:text-brand-gold transition-colors duration-300 ease-in-out"
                   >
                     {link.name}
                   </Link>
@@ -178,7 +178,7 @@ export const Footer = () => {
                     </span>
                     <a
                       href={`tel:${item.number.replace(/\s/g, "")}`}
-                      className="hover:text-white transition-colors font-medium text-brand-gold"
+                      className="bg-black p-1 hover:text-brand-gold transition-colors font-medium text-white"
                     >
                       {item.number}
                     </a>
@@ -194,7 +194,7 @@ export const Footer = () => {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-800 hover:text-brand-gold transition-colors duration-300"
+                  className="text-gray-800 hover:text-brand-gold "
                 >
                   <span className="sr-only">{link.name}</span>
                   <div className="p-2   rounded-full hover:bg-gray-700 transition-colors">
