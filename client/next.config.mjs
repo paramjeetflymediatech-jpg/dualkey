@@ -1,15 +1,13 @@
+const apiUrl = new URL(process.env.NEXT_PUBLIC_API_URL);
+
 const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: process.env.NEXT_PUBLIC_IMAGE_URL,
-        pathname: "/**",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        pathname: "/**",
+        protocol: apiUrl.protocol.replace(":", ""),
+        hostname: apiUrl.hostname,
+        port: apiUrl.port || undefined,
+        pathname: "/uploads/**",
       },
     ],
   },
