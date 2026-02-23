@@ -6,7 +6,7 @@ import { login } from "../../services/authService";
 
 import toast from "react-hot-toast";
 import Navbar from "../../components/Navbar";
-import {Footer} from "../../components/Footer";
+import { Footer } from "../../components/Footer";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -18,7 +18,7 @@ export default function Login() {
     try {
       let res = await login({ email, password });
       toast.success("Login successful");
-      window.location.href = "/dashboard";
+      router.push("/dashboard");
     } catch (error) {
       if (error.response && error.response.status === 403) {
         toast.error(
